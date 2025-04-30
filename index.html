@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Dream Collective | Animal Portrait Artist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5E3B2E',
+                        secondary: '#C4A484',
+                        accent: '#A67C52',
+                    },
+                    fontFamily: {
+                        sans: ['"Playfair Display"', 'serif'],
+                        body: ['"Open Sans"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap');
+        .artwork-card {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .artwork-overlay {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .artwork-card:hover .artwork-overlay {
+            opacity: 1;
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #C4A484;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        
+        .active-nav:after {
+            width: 100%;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .drawing-process {
+            background: url('https://images.unsplash.com/photo-1579547945413-497e1b99dac0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+        
+        .drawing-process::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(94, 59, 46, 0.85);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-body text-primary">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white bg-opacity-90 shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-sans font-bold text-primary">Day Dream Collective</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="nav-link active-nav px-3 py-2 text-sm font-medium">Home</a>
+                        <a href="#gallery" class="nav-link px-3 py-2 text-sm font-medium">Gallery</a>
+                        <a href="#process" class="nav-link px-3 py-2 text-sm font-medium">Process</a>
+                        <a href="#about" class="nav-link px-3 py-2 text-sm font-medium">About</a>
+                        <a href="#testimonials" class="nav-link px-3 py-2 text-sm font-medium">Testimonials</a>
+                        <a href="#contact" class="nav-link px-3 py-2 text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-primary focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white py-4 px-4 shadow-lg">
+            <div class="flex flex-col space-y-3">
+                <a href="#home" class="block px-3 py-2 text-base font-medium">Home</a>
+                <a href="#gallery" class="block px-3 py-2 text-base font-medium">Gallery</a>
+                <a href="#process" class="block px-3 py-2 text-base font-medium">Process</a>
+                <a href="#about" class="block px-3 py-2 text-base font-medium">About</a>
+                <a href="#testimonials" class="block px-3 py-2 text-base font-medium">Testimonials</a>
+                <a href="#contact" class="block px-3 py-2 text-base font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-20 md:pt-32 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-sans font-bold leading-tight mb-6">
+                    Capturing the <span class="text-accent">Soul</span> of Every Creature
+                </h1>
+                <p class="text-lg text-gray-600 mb-8">
+                    Handcrafted animal portraits that bring your beloved pets and wildlife to life with every stroke.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#contact" class="bg-primary hover:bg-opacity-90 text-white px-8 py-3 rounded-md text-center font-medium transition duration-300">
+                        Commission a Portrait
+                    </a>
+                    <a href="#gallery" class="border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-md text-center font-medium transition duration-300">
+                        View Gallery
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2 relative">
+                <div class="relative rounded-xl overflow-hidden shadow-2xl">
+                    <img src="IMG_1255.jpeg" alt="Animal portrait example" class="w-full h-auto">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition duration-300">
+                        <span class="text-white text-xl font-medium">"Whisper" - Charcoal on Paper</span>
+                    </div>
+                </div>
+                <div class="absolute -bottom-6 -left-6 bg-secondary w-24 h-24 rounded-full z-0"></div>
+                <div class="absolute -top-6 -right-6 bg-accent w-20 h-20 rounded-full z-0"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gray-100">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-sans font-bold mb-4">Portrait Gallery</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Explore a selection of commissioned works showcasing various mediums and animal subjects.</p>
+        </div>
+
+        <div class="mb-8 flex justify-center">
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button type="button" class="filter-btn px-4 py-2 text-sm font-medium rounded-l-lg border border-primary bg-primary text-white" data-filter="all">
+                    All
+                </button>
+                <button type="button" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-primary text-primary hover:bg-primary hover:text-white" data-filter="dogs">
+                    Dogs
+                </button>
+                <button type="button" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-primary text-primary hover:bg-primary hover:text-white" data-filter="cats">
+                    Cats
+                </button>
+                <button type="button" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-primary text-primary hover:bg-primary hover:text-white" data-filter="wildlife">
+                    Wildlife
+                </button>
+                <button type="button" class="filter-btn px-4 py-2 text-sm font-medium rounded-r-lg border border-primary text-primary hover:bg-primary hover:text-white" data-filter="horses">
+                    Horses
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="gallery-grid">
+            <!-- Artwork items will be inserted here by JavaScript -->
+        </div>
+
+        <div class="text-center mt-12">
+            <button id="load-more" class="border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-md font-medium transition duration-300">
+                Load More
+            </button>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="drawing-process py-20 px-4 sm:px-6 lg:px-8 relative text-white">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-sans font-bold mb-4">My Creative Process</h2>
+                <p class="max-w-2xl mx-auto opacity-90">Each portrait is a journey from concept to finished masterpiece.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm border border-white border-opacity-20">
+                    <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-camera-retro text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-sans font-bold mb-3 text-center">1. Reference Photos</h3>
+                    <p class="text-white text-opacity-80 text-center">We discuss and select the perfect reference photos that capture your pet's personality.</p>
+                </div>
+
+                <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm border border-white border-opacity-20">
+                    <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-pencil-alt text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-sans font-bold mb-3 text-center">2. Sketching</h3>
+                    <p class="text-white text-opacity-80 text-center">Initial sketches establish composition and proportions before detailed work begins.</p>
+                </div>
+
+                <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm border border-white border-opacity-20">
+                    <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-paint-brush text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-sans font-bold mb-3 text-center">3. Rendering</h3>
+                    <p class="text-white text-opacity-80 text-center">Layers of medium build up texture, depth, and lifelike details over several days.</p>
+                </div>
+
+                <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm border border-white border-opacity-20">
+                    <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-box-open text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-sans font-bold mb-3 text-center">4. Delivery</h3>
+                    <p class="text-white text-opacity-80 text-center">Your portrait is carefully packaged and shipped with tracking information provided.</p>
+                </div>
+            </div>
+
+            <div class="mt-16 bg-white bg-opacity-10 p-8 rounded-lg backdrop-blur-sm border border-white border-opacity-20 max-w-4xl mx-auto">
+                <h3 class="text-2xl font-sans font-bold mb-6 text-center">Time-Lapse Demonstration</h3>
+                <div class="aspect-w-16 aspect-h-9 bg-black bg-opacity-30 rounded-lg overflow-hidden relative">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <button class="w-20 h-20 bg-accent bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition duration-300">
+                            <i class="fas fa-play text-2xl text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/3 mb-10 md:mb-0 md:pr-10 relative">
+                <div class="rounded-xl overflow-hidden shadow-xl">
+                    <img src="IMG_1247.png" alt="Artist at work" class="w-full h-auto">
+                </div>
+                <div class="absolute -bottom-6 -right-6 bg-secondary w-32 h-32 rounded-full z-0"></div>
+            </div>
+            <div class="md:w-2/3">
+                <h2 class="text-3xl md:text-4xl font-sans font-bold mb-6">About the Artist</h2>
+                <p class="text-gray-600 mb-6">
+                    With over 15 years of experience in animal portraiture, I've dedicated my artistic career to capturing the unique spirit and personality of creatures great and small. My journey began in wildlife conservation, where my sketches of endangered species helped
+                    raise awareness and funds for their protection.
+                </p>
+                <p class="text-gray-600 mb-8">
+                    Today, I specialize in creating heirloom-quality portraits that celebrate the bond between humans and animals. Each piece is created with archival-quality materials to ensure your portrait lasts for generations.
+                </p>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                            <i class="fas fa-award text-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-sans font-bold mb-1">Award Winning</h4>
+                            <p class="text-sm text-gray-600">Recognized by the International Wildlife Art Society</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                            <i class="fas fa-leaf text-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-sans font-bold mb-1">Eco-Conscious</h4>
+                            <p class="text-sm text-gray-600">Sustainable materials and practices</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                            <i class="fas fa-globe text-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-sans font-bold mb-1">Worldwide</h4>
+                            <p class="text-sm text-gray-600">Commissioned by clients in 18 countries</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                            <i class="fas fa-heart text-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-sans font-bold mb-1">Passionate</h4>
+                            <p class="text-sm text-gray-600">Each portrait receives 40+ hours of work</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="#contact" class="inline-block bg-primary hover:bg-opacity-90 text-white px-8 py-3 rounded-md font-medium transition duration-300">
+                    Get in Touch
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gray-100">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-sans font-bold mb-4">Client Testimonials</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Hear what my clients say about their portrait experience.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="testimonial-card p-8 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                        <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Sarah J." class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-bold">Sarah J.</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">
+                    "The portrait of my golden retriever Max brought me to tears. It captures his playful spirit so perfectly. The attention to detail in his fur and eyes is incredible."
+                </p>
+                <div class="text-sm text-gray-500">Portrait of "Max" - Charcoal & Pastel</div>
+            </div>
+
+            <div class="testimonial-card p-8 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael T." class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-bold">Michael T.</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">
+                    "I commissioned a portrait of my late cat Whiskers as a gift for my wife. When she saw it, she burst into happy tears. It's like Whiskers is still with us."
+                </p>
+                <div class="text-sm text-gray-500">Portrait of "Whiskers" - Watercolor</div>
+            </div>
+
+            <div class="testimonial-card p-8 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Emma R." class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-bold">Emma R.</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">
+                    "The wildlife portrait I ordered for our nature center is stunning. Visitors can't believe it's not a photograph. The artist perfectly captured the wolf's intensity."
+                </p>
+                <div class="text-sm text-gray-500">Portrait of "Luna" - Oil on Canvas</div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="#contact" class="inline-block border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-md font-medium transition duration-300">
+                Share Your Experience
+            </a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-sans font-bold mb-4">Commission a Portrait</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Ready to immortalize your beloved animal companion? Let's create something beautiful together.</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row">
+            <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+                <form class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                    </div>
+
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                        <select id="subject" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                            <option value="">Select an option</option>
+                            <option value="pet-portrait">Pet Portrait</option>
+                            <option value="wildlife">Wildlife Portrait</option>
+                            <option value="gift">Gift Commission</option>
+                            <option value="other">Other Inquiry</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                        <textarea id="message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"></textarea>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="agree" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                        <label for="agree" class="ml-2 block text-sm text-gray-700">
+                            I agree to the processing of my data for this inquiry
+                        </label>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full bg-primary hover:bg-opacity-90 text-white px-6 py-3 rounded-md font-medium transition duration-300">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="md:w-1/2 md:pl-10">
+                <div class="bg-gray-50 p-8 rounded-lg h-full">
+                    <h3 class="text-xl font-sans font-bold mb-6">Portrait Details</h3>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-ruler-combined text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-sans font-bold mb-1">Sizes Available</h4>
+                                <p class="text-gray-600">8x10", 11x14", 16x20", 18x24", Custom sizes available</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-palette text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-sans font-bold mb-1">Mediums Offered</h4>
+                                <p class="text-gray-600">Charcoal, Graphite, Colored Pencil, Watercolor, Acrylic, Oil</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-clock text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-sans font-bold mb-1">Turnaround Time</h4>
+                                <p class="text-gray-600">Typically 4-6 weeks from reference photo approval</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-dollar-sign text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-sans font-bold mb-1">Pricing</h4>
+                                <p class="text-gray-600">Starting at $250 for 8x10" graphite, with custom quotes available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h4 class="font-sans font-bold mb-4">Contact Information</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-accent mr-3"></i>
+                                <span class="text-gray-600">art@wildstrokes.com</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-phone-alt text-accent mr-3"></i>
+                                <span class="text-gray-600">(555) 123-4567</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt text-accent mr-3"></i>
+                                <span class="text-gray-600">Portland, OR (Shipping worldwide)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-sans font-bold mb-4">Day Dream Collective</h3>
+                    <p class="text-white text-opacity-80">
+                        Creating timeless animal portraits that celebrate the beauty and personality of every creature.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-sans font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Home</a></li>
+                        <li><a href="#gallery" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Gallery</a></li>
+                        <li><a href="#process" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Process</a></li>
+                        <li><a href="#about" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">About</a></li>
+                        <li><a href="#contact" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-sans font-bold mb-4">Follow Along</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+
+                    <h4 class="text-lg font-sans font-bold mt-6 mb-4">Newsletter</h4>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-md text-gray-800 w-full focus:outline-none">
+                        <button class="bg-accent hover:bg-opacity-90 px-4 py-2 rounded-r-md transition duration-300">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-sans font-bold mb-4">Business Hours</h4>
+                    <ul class="space-y-2 text-white text-opacity-80">
+                        <li class="flex justify-between">
+                            <span>Monday - Friday</span>
+                            <span>9AM - 5PM</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Saturday</span>
+                            <span>10AM - 2PM</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Sunday</span>
+                            <span>Closed</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white border-opacity-20 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-white text-opacity-80 mb-4 md:mb-0">
+                    &copy; 2023 Day Dream Collective. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Privacy Policy</a>
+                    <a href="#" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Terms of Service</a>
+                    <a href="#" class="text-white text-opacity-80 hover:text-opacity-100 transition duration-300">Shipping Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 w-12 h-12 bg-primary text-white rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+
+                        // Close mobile menu if open
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Update active navigation link on scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', function() {
+                let current = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+
+                    if (pageYOffset >= (sectionTop - 100)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            });
+
+            // Back to top button
+            const backToTopButton = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.remove('opacity-0', 'invisible');
+                    backToTopButton.classList.add('opacity-100', 'visible');
+                } else {
+                    backToTopButton.classList.remove('opacity-100', 'visible');
+                    backToTopButton.classList.add('opacity-0', 'invisible');
+                }
+            });
+
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Gallery filtering
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const galleryGrid = document.getElementById('gallery-grid');
+            const loadMoreButton = document.getElementById('load-more');
+
+            // Sample artwork data
+            const artworks = [{
+                id: 1,
+                title: "Majestic Lion",
+                category: "wildlife",
+                medium: "Oil on Canvas",
+                image: "https://images.unsplash.com/photo-1550358864-518f202c02ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 2,
+                title: "Golden Retriever",
+                category: "dogs",
+                medium: "Charcoal",
+                image: "https://images.unsplash.com/photo-1583511655826-05700442b31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+            }, {
+                id: 3,
+                title: "Siamese Cat",
+                category: "cats",
+                medium: "Watercolor",
+                image: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+            }, {
+                id: 4,
+                title: "Arabian Horse",
+                category: "horses",
+                medium: "Graphite",
+                image: "https://images.unsplash.com/photo-1588943211346-0905a1b0b454?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 5,
+                title: "Arctic Fox",
+                category: "wildlife",
+                medium: "Colored Pencil",
+                image: "https://images.unsplash.com/photo-1500479694472-551d1fb6258d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 6,
+                title: "French Bulldog",
+                category: "dogs",
+                medium: "Acrylic",
+                image: "https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=689&q=80"
+            }, {
+                id: 7,
+                title: "Black Panther",
+                category: "wildlife",
+                medium: "Oil on Canvas",
+                image: "https://images.unsplash.com/photo-1545468251-1568152583-34ec1fc2ff77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 8,
+                title: "Persian Cat",
+                category: "cats",
+                medium: "Pastel",
+                image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80"
+            }, {
+                id: 9,
+                title: "Friesian Horse",
+                category: "horses",
+                medium: "Charcoal",
+                image: "https://images.unsplash.com/photo-1553284965-e2815db2e5a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }];
+
+            // More artworks for "load more" functionality
+            const moreArtworks = [{
+                id: 10,
+                title: "Bengal Tiger",
+                category: "wildlife",
+                medium: "Oil on Canvas",
+                image: "https://images.unsplash.com/photo-1561737425-334c0b9feb1c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 11,
+                title: "Dachshund",
+                category: "dogs",
+                medium: "Watercolor",
+                image: "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }, {
+                id: 12,
+                title: "Tabby Cat",
+                category: "cats",
+                medium: "Graphite",
+                image: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }];
+
+            // Function to render artworks
+            function renderArtworks(artworksToRender) {
+                galleryGrid.innerHTML = '';
+
+                artworksToRender.forEach(artwork => {
+                    const artworkElement = document.createElement('div');
+                    artworkElement.className = 'artwork-card rounded-lg overflow-hidden shadow-lg relative';
+                    artworkElement.dataset.category = artwork.category;
+
+                    artworkElement.innerHTML = `
+                        <div class="relative">
+                            <img src="${artwork.image}" alt="${artwork.title}" class="w-full h-64 object-cover">
+                            <div class="artwork-overlay absolute inset-0 flex items-end p-4">
+                                <div>
+                                    <h3 class="text-white font-sans font-bold text-lg">${artwork.title}</h3>
+                                    <p class="text-white text-opacity-80 text-sm">${artwork.medium}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    galleryGrid.appendChild(artworkElement);
+                });
+            }
+
+            // Initial render
+            renderArtworks(artworks);
+
+            // Filter artworks
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active filter button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('text-primary', 'hover:bg-primary', 'hover:text-white');
+                    });
+
+                    this.classList.add('bg-primary', 'text-white');
+                    this.classList.remove('text-primary', 'hover:bg-primary', 'hover:text-white');
+
+                    // Filter artworks
+                    const filter = this.dataset.filter;
+
+                    if (filter === 'all') {
+                        renderArtworks(artworks);
+                    } else {
+                        const filteredArtworks = artworks.filter(artwork => artwork.category === filter);
+                        renderArtworks(filteredArtworks);
+                    }
+                });
+            });
+
+            // Load more artworks
+            loadMoreButton.addEventListener('click', function() {
+                const currentFilter = document.querySelector('.filter-btn.bg-primary').dataset.filter;
+
+                if (currentFilter === 'all') {
+                    renderArtworks([...artworks, ...moreArtworks]);
+                } else {
+                    const filteredArtworks = [...artworks, ...moreArtworks].filter(artwork => artwork.category === currentFilter);
+                    renderArtworks(filteredArtworks);
+                }
+
+                this.style.display = 'none';
+            });
+
+            // Form submission
+            const contactForm = document.querySelector('form');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Simple form validation
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                const agree = document.getElementById('agree').checked;
+
+                if (!name || !email || !subject || !message || !agree) {
+                    alert('Please fill in all fields and agree to the data processing.');
+                    return;
+                }
+
+                // In a real application, you would send this data to a server
+                alert('Thank you for your message! I will get back to you soon.');
+                this.reset();
+            });
+        });
+    </script>
+</body>
+
+</html>
