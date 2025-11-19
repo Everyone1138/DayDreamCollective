@@ -409,45 +409,51 @@
 
         <div class="flex flex-col md:flex-row">
             <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-                <form class="space-y-6">
+                <form id="contact-form" class="space-y-6" action="contact.php" method="POST" novalidate>
+                    <!-- honeypot (hidden from users) -->
+                    <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" style="display:none">
+
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                        <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                        <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
                     </div>
 
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
                     </div>
 
                     <div>
                         <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                        <select id="subject" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
-                            <option value="">Select an option</option>
-                            <option value="pet-portrait">Pet Portrait</option>
-                            <option value="portraits">Wildlife Portrait</option>
-                            <option value="gift">Gift Commission</option>
-                            <option value="other">Other Inquiry</option>
-                        </select>
+                        <select id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+      <option value="">Select an option</option>
+      <option value="Pet Portrait">Pet Portrait</option>
+      <option value="Wildlife Portrait">Wildlife Portrait</option>
+      <option value="Gift Commission">Gift Commission</option>
+      <option value="Other Inquiry">Other Inquiry</option>
+    </select>
                     </div>
 
                     <div>
                         <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
-                        <textarea id="message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"></textarea>
+                        <textarea id="message" name="message" rows="5" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"></textarea>
                     </div>
 
                     <div class="flex items-center">
-                        <input id="agree" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                        <input id="agree" name="agree" type="checkbox" required class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
                         <label for="agree" class="ml-2 block text-sm text-gray-700">
-                            I agree to the processing of my data for this inquiry
-                        </label>
+      I agree to the processing of my data for this inquiry
+    </label>
                     </div>
 
                     <div>
                         <button type="submit" class="w-full bg-primary hover:bg-opacity-90 text-white px-6 py-3 rounded-md font-medium transition duration-300">
-                            Send Message
-                        </button>
+      Send Message
+    </button>
                     </div>
+
+                    <!-- Success / error placeholder -->
+                    <p id="contact-status" class="text-sm mt-2"></p>
                 </form>
             </div>
 
@@ -559,12 +565,16 @@
                     </div>
 
                     <h4 class="text-lg font-sans font-bold mt-6 mb-4">Newsletter</h4>
-                    <div class="flex">
-                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-md text-gray-800 w-full focus:outline-none">
-                        <button class="bg-accent hover:bg-opacity-90 px-4 py-2 rounded-r-md transition duration-300">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
+                    <form id="subscribe-form" class="flex" action="subscribe.php" method="POST" novalidate>
+                        <!-- honeypot -->
+                        <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" style="display:none">
+
+                        <input type="email" name="email" placeholder="Your email" required class="px-4 py-2 rounded-l-md text-gray-800 w-full focus:outline-none">
+                        <button type="submit" class="bg-accent hover:bg-opacity-90 px-4 py-2 rounded-r-md transition duration-300">
+    <i class="fas fa-paper-plane"></i>
+  </button>
+                    </form>
+                    <p id="subscribe-status" class="text-sm mt-2 text-white text-opacity-80"></p>
                 </div>
 
                 <div>
@@ -922,7 +932,7 @@
             });
         });
     </script>
-
+    <script src="js/mailer.js"></script>
 
     <!-- Lightbox / Pop-up Gallery -->
     <div id="lightbox" class="fixed inset-0 z-[60] hidden">

@@ -1,1 +1,6 @@
-quly arrn ciul parn
+# Block public access to CSV in Apache 2.4+
+Require all denied
+
+
+
+
