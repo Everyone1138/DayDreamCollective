@@ -920,24 +920,6 @@
                 passive: true
             });
 
-            // ===== Contact form =====
-            const contactForm = document.querySelector('form');
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const subject = document.getElementById('subject').value;
-                const message = document.getElementById('message').value;
-                const agree = document.getElementById('agree').checked;
-
-                if (!name || !email || !subject || !message || !agree) {
-                    alert('Please fill in all fields and agree to the data processing.');
-                    return;
-                }
-
-                alert('Thank you for your message! I will get back to you soon.');
-                this.reset();
-            });
         });
     </script>
     <script src="js/mailer.js"></script>

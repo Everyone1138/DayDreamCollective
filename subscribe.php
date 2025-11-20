@@ -1,87 +1,39 @@
 <?php
-// subscribe.php
+// subscribe.php - Day Dream Collective newsletter handler
+
 header('Content-Type: application/json');
 
-// OPTIONAL: reCAPTCHA v3 secret key (G)
-$recaptchaSecret = ''; // 'YOUR_RECAPTCHA_SECRET_KEY_HERE';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// Gmail SMTP credentials (D)
-$mail->Username   = 'daydreamcollectiveart@gmail.com';      // TODO: your Gmail
-$mail->Password   = 'evkanmrsdorsunfn';   // TODO: 16-char app password
+// PHPMailer includes (folder: /phpmailer/src)
+require __DIR__ . '/phpmailer/src/Exception.php';
+require __DIR__ . '/phpmailer/src/PHPMailer.php';
+require __DIR__ . '/phpmailer/src/SMTP.php';
 
-// OPTIONAL: Google Sheets webhook (F)
-$googleSheetsWebhook = ''; // 'https://script.google.com/macros/s/XXXXX/exec';
+$gmailUser = 'daydreamcollectiveart@gmail.com';      // <-- your Gmail
+$gmailPass = 'evkanmrsdorsunfn';                    // <-- your 16-char app password (no spaces)
 
-// Helper: verify reCAPTCHA v3 (G)
-function verify_recaptcha($token, $secret) {
-    if (!$secret) {
-        return true;
-    }
-    if (!$token) {
-        return false;
-    }
-
-    $url = 'https://www.google.com/recaptcha/api/siteverify';
-    $data = http_build_query([
-        'secret'   => $secret,
-        'response' => $token,
-        'remoteip' => $_SERVER['REMOTE_ADDR'] ?? null,
-    ]);
-
-    $options = [
-        'http' => [
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method'  => 'POST',
-            'content' => $data,
-            'timeout' => 5,
-        ],
-    ];
-
-    $context = stream_context_create($options);
-    $result  = @file_get_contents($url, false, $context);
-
-    if ($result === false) {
-        return false;
-    }
-
-    $json = json_decode($result, true);
-    if (!is_array($json) || empty($json['success'])) {
-        return false;
-    }
-
-    if (isset($json['score']) && $json['score'] < 0.5) {
-        return false;
-    }
-
-    return true;
-}
-
-// Only POST
+// Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['ok' => false, 'error' => 'Invalid request']);
     exit;
 }
 
-// Honeypot (H)
+// Honeypot
 if (!empty($_POST['website'])) {
     echo json_encode(['ok' => true]);
     exit;
 }
 
-// reCAPTCHA check (G)
-$recaptchaToken = $_POST['g-recaptcha-response'] ?? '';
-if (!verify_recaptcha($recaptchaToken, $recaptchaSecret)) {
-    echo json_encode(['ok' => false, 'error' => 'reCAPTCHA verification failed. Please try again.']);
-    exit;
-}
-
-// Only email field for newsletter (B)
+// Only email is required for newsletter
 $email = trim($_POST['email'] ?? '');
 
 if ($email === '') {
     echo json_encode(['ok' => false, 'error' => 'Please enter your email.']);
     exit;
 }
+
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['ok' => false, 'error' => 'Please enter a valid email address.']);
     exit;
@@ -89,27 +41,18 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 $cleanEmail = strip_tags($email);
 
-// CSV log of subscribers (C)
+// Log to CSV (subscribers.csv in same folder)
 $subsFile = __DIR__ . '/subscribers.csv';
-$subsData = [
+$subsRow  = [
     date('Y-m-d H:i:s'),
     $cleanEmail,
     $_SERVER['REMOTE_ADDR'] ?? '',
 ];
 
 if ($fh = @fopen($subsFile, 'a')) {
-    fputcsv($fh, $subsData);
+    fputcsv($fh, $subsRow);
     fclose($fh);
 }
-
-// PHPMailer (B, D)
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// NOTE: adjust path if your folder is different
-require __DIR__ . '/phpmailer/src/Exception.php';
-require __DIR__ . '/phpmailer/src/PHPMailer.php';
-require __DIR__ . '/phpmailer/src/SMTP.php';
 
 try {
     // 1) Email to you (new subscriber)
@@ -133,7 +76,7 @@ try {
 
     $mailOwner->send();
 
-    // 2) Auto-reply to the subscriber (D)
+    // 2) Auto-reply to subscriber
     $mailReply = new PHPMailer(true);
     $mailReply->isSMTP();
     $mailReply->Host       = 'smtp.gmail.com';
@@ -161,24 +104,6 @@ try {
         "With gratitude,\nDay Dream Collective";
 
     $mailReply->send();
-
-    // 3) OPTIONAL: send to Google Sheets (F)
-    if (!empty($googleSheetsWebhook)) {
-        $payload = http_build_query([
-            'type'  => 'subscribe',
-            'email' => $cleanEmail,
-            'time'  => date('c'),
-        ]);
-
-        @file_get_contents($googleSheetsWebhook, false, stream_context_create([
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => $payload,
-                'timeout' => 3,
-            ],
-        ]));
-    }
 
     echo json_encode(['ok' => true]);
 } catch (Exception $e) {

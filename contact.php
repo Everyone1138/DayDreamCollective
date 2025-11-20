@@ -1,65 +1,18 @@
 <?php
-// contact.php
+// contact.php - Day Dream Collective contact handler
+
 header('Content-Type: application/json');
 
-// OPTIONAL: reCAPTCHA v3 secret key (G)
-// Leave as '' to disable reCAPTCHA for now
-$recaptchaSecret = ''; // 'YOUR_RECAPTCHA_SECRET_KEY_HERE';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// Gmail SMTP credentials (D)
-// TODO: replace with your real Gmail + App Password
-$mail->Username   = 'daydreamcollectiveart@gmail.com';      // TODO: your Gmail
-$mail->Password   = 'evkanmrsdorsunfn'; 
+// PHPMailer includes (folder: /phpmailer/src)
+require __DIR__ . '/phpmailer/src/Exception.php';
+require __DIR__ . '/phpmailer/src/PHPMailer.php';
+require __DIR__ . '/phpmailer/src/SMTP.php';
 
-// OPTIONAL: Google Sheets webhook (F)
-// This will be a Google Apps Script Web App URL if/when you set it up
-$googleSheetsWebhook = ''; // 'https://script.google.com/macros/s/XXXXX/exec';
-
-// Helper: verify reCAPTCHA v3 (G)
-function verify_recaptcha($token, $secret) {
-    if (!$secret) {
-        // reCAPTCHA disabled
-        return true;
-    }
-    if (!$token) {
-        return false;
-    }
-
-    $url = 'https://www.google.com/recaptcha/api/siteverify';
-    $data = http_build_query([
-        'secret'   => $secret,
-        'response' => $token,
-        'remoteip' => $_SERVER['REMOTE_ADDR'] ?? null,
-    ]);
-
-    $options = [
-        'http' => [
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method'  => 'POST',
-            'content' => $data,
-            'timeout' => 5,
-        ],
-    ];
-
-    $context = stream_context_create($options);
-    $result  = @file_get_contents($url, false, $context);
-
-    if ($result === false) {
-        return false;
-    }
-
-    $json = json_decode($result, true);
-    if (!is_array($json) || empty($json['success'])) {
-        return false;
-    }
-
-    // For v3, optionally check the score
-    if (isset($json['score']) && $json['score'] < 0.5) {
-        return false;
-    }
-
-    return true;
-}
+$gmailUser = 'daydreamcollectiveart@gmail.com';// <-- your Gmail
+$gmailPass = 'evkanmrsdorsunfn'; // <-- your 16-char app password (no spaces)
 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -67,28 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Honeypot (H)
+// Honeypot (hidden "website" field)
 if (!empty($_POST['website'])) {
-    // Pretend success to confuse bots
+    // Pretend success to bots
     echo json_encode(['ok' => true]);
     exit;
 }
 
-// reCAPTCHA check (G)
-$recaptchaToken = $_POST['g-recaptcha-response'] ?? '';
-if (!verify_recaptcha($recaptchaToken, $recaptchaSecret)) {
-    echo json_encode(['ok' => false, 'error' => 'reCAPTCHA verification failed. Please try again.']);
-    exit;
-}
-
-// Get inputs
+// Get and validate fields
 $name    = trim($_POST['name'] ?? '');
 $email   = trim($_POST['email'] ?? '');
 $subject = trim($_POST['subject'] ?? '');
 $message = trim($_POST['message'] ?? '');
 $agree   = isset($_POST['agree']);
 
-// Basic validation (A, H)
 if ($name === '' || $email === '' || $subject === '' || $message === '') {
     echo json_encode(['ok' => false, 'error' => 'Please fill in all required fields.']);
     exit;
@@ -110,9 +55,9 @@ $cleanEmail   = strip_tags($email);
 $cleanSubject = strip_tags($subject);
 $cleanMessage = strip_tags($message);
 
-// CSV log (C)
+// Log to CSV (contact-log.csv in the same folder)
 $logFile = __DIR__ . '/contact-log.csv';
-$logData = [
+$logRow  = [
     date('Y-m-d H:i:s'),
     $cleanName,
     $cleanEmail,
@@ -122,29 +67,20 @@ $logData = [
 ];
 
 if ($fh = @fopen($logFile, 'a')) {
-    fputcsv($fh, $logData);
+    fputcsv($fh, $logRow);
     fclose($fh);
 }
 
-// PHPMailer (A, D)
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// NOTE: adjust this path if your folder is named differently
-require __DIR__ . '/phpmailer/src/Exception.php';
-require __DIR__ . '/phpmailer/src/PHPMailer.php';
-require __DIR__ . '/phpmailer/src/SMTP.php';
-
 try {
-    // 1) Email to you (site owner)
+    // 1) Email to you
     $mailOwner = new PHPMailer(true);
     $mailOwner->isSMTP();
-    $mailOwner->Host       = 'smtp.gmail.com';
-    $mailOwner->SMTPAuth   = true;
-    $mailOwner->Username   = $gmailUser;
-    $mailOwner->Password   = $gmailPass;
+    $mailOwner->Host = 'smtp.gmail.com';
+    $mailOwner->SMTPAuth = true;
+    $mailOwner->Username = $gmailUser;
+    $mailOwner->Password = $gmailPass;
     $mailOwner->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mailOwner->Port       = 587;
+    $mailOwner->Port  = 587;
 
     $mailOwner->setFrom($gmailUser, 'Day Dream Collective');
     $mailOwner->addAddress($gmailUser, 'Day Dream Collective');
@@ -159,7 +95,7 @@ try {
 
     $mailOwner->send();
 
-    // 2) Auto-reply to the user (D)
+    // 2) Auto-reply to the visitor
     $mailReply = new PHPMailer(true);
     $mailReply->isSMTP();
     $mailReply->Host       = 'smtp.gmail.com';
@@ -187,27 +123,6 @@ try {
         "With gratitude,\nDay Dream Collective";
 
     $mailReply->send();
-
-    // 3) OPTIONAL: send to Google Sheets (F) via Apps Script webhook
-    if (!empty($googleSheetsWebhook)) {
-        $payload = http_build_query([
-            'type'    => 'contact',
-            'name'    => $cleanName,
-            'email'   => $cleanEmail,
-            'subject' => $cleanSubject,
-            'message' => $cleanMessage,
-            'time'    => date('c'),
-        ]);
-
-        @file_get_contents($googleSheetsWebhook, false, stream_context_create([
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => $payload,
-                'timeout' => 3,
-            ],
-        ]));
-    }
 
     echo json_encode(['ok' => true]);
 } catch (Exception $e) {
