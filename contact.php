@@ -1,19 +1,17 @@
 <?php
-// contact.php - Day Dream Collective contact handler
+// contact.php - Day Dream Collective contact handler with optional image upload
 
 header('Content-Type: application/json');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// PHPMailer includes (folder: /phpmailer/src)
 require __DIR__ . '/phpmailer/src/Exception.php';
 require __DIR__ . '/phpmailer/src/PHPMailer.php';
 require __DIR__ . '/phpmailer/src/SMTP.php';
 
-$gmailUser = 'daydreamcollectiveart@gmail.com';// <-- your Gmail
-$gmailPass = 'evkanmrsdorsunfn'; // <-- your 16-char app password (no spaces)
-
+$gmailUser = 'daydreamcollectiveart@gmail.com';
+$gmailPass = 'evkanmrsdorsunfn'; 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['ok' => false, 'error' => 'Invalid request']);
@@ -22,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Honeypot (hidden "website" field)
 if (!empty($_POST['website'])) {
-    // Pretend success to bots
     echo json_encode(['ok' => true]);
     exit;
 }
@@ -55,6 +52,52 @@ $cleanEmail   = strip_tags($email);
 $cleanSubject = strip_tags($subject);
 $cleanMessage = strip_tags($message);
 
+// === OPTIONAL IMAGE UPLOAD HANDLING ===
+$attachmentTmpPath = null;
+$attachmentName    = null;
+
+// Check if a file was uploaded
+if (isset($_FILES['reference_image']) && $_FILES['reference_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+    $fileError = $_FILES['reference_image']['error'];
+
+    if ($fileError === UPLOAD_ERR_OK) {
+        $fileSize = $_FILES['reference_image']['size'];
+        $fileTmp  = $_FILES['reference_image']['tmp_name'];
+        $fileName = $_FILES['reference_image']['name'];
+
+        // Max 5MB
+        $maxSize = 5 * 1024 * 1024;
+        if ($fileSize > $maxSize) {
+            echo json_encode(['ok' => false, 'error' => 'Image is too large. Max size is 5MB.']);
+            exit;
+        }
+
+        // Check MIME type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime  = $finfo->file($fileTmp);
+
+        $allowed = [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+        ];
+
+        if (!in_array($mime, $allowed, true)) {
+            echo json_encode(['ok' => false, 'error' => 'Invalid image type. Please upload JPG, PNG, GIF, or WEBP.']);
+            exit;
+        }
+
+        // If all good, we'll attach this temp file directly in PHPMailer
+        $attachmentTmpPath = $fileTmp;
+        $attachmentName    = $fileName;
+    } else {
+        // Some upload error occurred
+        echo json_encode(['ok' => false, 'error' => 'There was a problem uploading the image. Please try again.']);
+        exit;
+    }
+}
+
 // Log to CSV (contact-log.csv in the same folder)
 $logFile = __DIR__ . '/contact-log.csv';
 $logRow  = [
@@ -64,6 +107,7 @@ $logRow  = [
     $cleanSubject,
     preg_replace('/\s+/', ' ', $cleanMessage),
     $_SERVER['REMOTE_ADDR'] ?? '',
+    $attachmentName ?? '', // store original filename if provided
 ];
 
 if ($fh = @fopen($logFile, 'a')) {
@@ -75,12 +119,12 @@ try {
     // 1) Email to you
     $mailOwner = new PHPMailer(true);
     $mailOwner->isSMTP();
-    $mailOwner->Host = 'smtp.gmail.com';
-    $mailOwner->SMTPAuth = true;
-    $mailOwner->Username = $gmailUser;
-    $mailOwner->Password = $gmailPass;
+    $mailOwner->Host       = 'smtp.gmail.com';
+    $mailOwner->SMTPAuth   = true;
+    $mailOwner->Username   = $gmailUser;
+    $mailOwner->Password   = $gmailPass;
     $mailOwner->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mailOwner->Port  = 587;
+    $mailOwner->Port       = 587;
 
     $mailOwner->setFrom($gmailUser, 'Day Dream Collective');
     $mailOwner->addAddress($gmailUser, 'Day Dream Collective');
@@ -93,9 +137,14 @@ try {
     $mailOwner->Body    = nl2br($bodyText);
     $mailOwner->AltBody = $bodyText;
 
+    // Attach image if present
+    if ($attachmentTmpPath && $attachmentName) {
+        $mailOwner->addAttachment($attachmentTmpPath, $attachmentName);
+    }
+
     $mailOwner->send();
 
-    // 2) Auto-reply to the visitor
+    // 2) Auto-reply to the visitor (no need to attach image back)
     $mailReply = new PHPMailer(true);
     $mailReply->isSMTP();
     $mailReply->Host       = 'smtp.gmail.com';
@@ -113,13 +162,17 @@ try {
     $mailReply->Body = nl2br(
         "Hi {$cleanName},\n\n" .
         "Thank you for reaching out to Day Dream Collective.\n" .
-        "We’ve received your message and will respond as soon as we can.\n\n" .
+        "We’ve received your message" .
+        ($attachmentName ? " along with your reference image" : "") .
+        " and will respond as soon as we can.\n\n" .
         "With gratitude,\nDay Dream Collective"
     );
     $mailReply->AltBody =
         "Hi {$cleanName},\n\n" .
         "Thank you for reaching out to Day Dream Collective.\n" .
-        "We’ve received your message and will respond as soon as we can.\n\n" .
+        "We’ve received your message" .
+        ($attachmentName ? " along with your reference image" : "") .
+        " and will respond as soon as we can.\n\n" .
         "With gratitude,\nDay Dream Collective";
 
     $mailReply->send();
